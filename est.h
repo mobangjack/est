@@ -17,6 +17,10 @@
 #ifndef __EST_H__
 #define __EST_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Estimator
 #include "gauss.h"
 #include "kalman.h"
@@ -38,5 +42,9 @@ Est_t* Est_Create(uint32_t gaussN, float kalmanQ);
 void Est_Proc(Est_t* est, float v);
 void Est_Reset(Est_t* est);
 void Est_Destroy(Est_t* est);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

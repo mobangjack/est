@@ -42,15 +42,21 @@ Est_t* Est_Create(uint32_t gaussN, float kalmanQ)
 
 void Est_Proc(Est_t* est, float v)
 {
-	GaussProc(est->gauss, v);
-	if (est->gauss->err < est->error) {
-		KalmanSetR(est->kalman, est->gauss->mse);
-		// KalmanSetE(est->kalman, est->gauss->mean);
-		// KalmanSetD(est->kalman, est->gauss->diff);
+	if (est->error > 0) {
+		GaussProc(est->gauss, v);
+		if (est->gauss->err < est->error) {
+			est->error = est->gauss->err;
+			KalmanSetR(est->kalman, est->gauss->mse);
+			KalmanSetE(est->kalman, est->gauss->mean);
+			KalmanSetD(est->kalman, est->gauss->delta_mean);
+		}
+		est->value = est->gauss->mean;
+		est->delta = est->gauss->delta_mean;
+	} else {
+		KalmanFilter(est->kalman, v);
+		est->value = est->kalman->e;
+		est->delta = est->kalman->d;
 	}
-	KalmanFilter(est->kalman, v);
-	est->value = est->kalman->e;
-	est->delta = est->kalman->d;
 }
 
 void Est_Reset(Est_t* est)
